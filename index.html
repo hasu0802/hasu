@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tools</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#fff;--ink:#000;--err:#c00;--ok:#080;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111;--ink:#ddd;--err:#f66;--ok:#6c6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111;--ink:#ddd;--err:#f66;--ok:#6c6;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:8px;min-height:100%;background:var(--bg);color:var(--ink)}
+nav button[aria-pressed=true],.seg button[aria-pressed=true]{font-weight:bold}
+section[hidden]{display:none}
+textarea,input[type=text],input[type=password],input[type=number]{width:100%}
+label{display:block}
+.chk label{display:inline}
+.row{display:flex}.row>*{flex:1}.row>.fit{flex:none}
+.g3{display:grid;grid-template-columns:repeat(3,1fr)}
+.out{white-space:pre-wrap;word-break:break-all;font-family:monospace}
+.hr{display:grid;grid-template-columns:70px 1fr auto;word-break:break-all}
+#ch,#ci{text-align:right}
+.pad{display:grid;grid-template-columns:repeat(4,1fr)}
+.pad button{height:40px}
+.row[hidden]{display:none}
+#note{margin-top:8px}
+#nm{min-height:1.4em}
+body{padding-bottom:28px}
+.err{color:var(--err)}.ok{color:var(--ok)}
+#f{position:fixed;right:8px;bottom:calc(4px + env(safe-area-inset-bottom,0px))}
+</style></head>
+<body><main>
+<nav>
+<button data-t="c" aria-pressed="true">Crypto</button><button data-t="h" aria-pressed="false">Hash</button><button data-t="k" aria-pressed="false">Calc</button><button data-t="r" aria-pressed="false">Random</button><button data-t="s" aria-pressed="false">String</button>
+</nav>
+
+<section id="p-c">
+<div class="seg"><button id="be" aria-pressed="true">Encrypt</button><button id="bd" aria-pressed="false">Decrypt</button></div>
+<label for="m">Method</label><select id="m"></select><label for="ti" id="til">Input</label><textarea id="ti"></textarea>
+<div id="kw"><label for="key" id="kl">Key</label>
+<div class="row"><input id="key" type="password" autocomplete="off"><button class="sec fit" id="eye" type="button">Show</button></div></div>
+<button class="btn" id="go">Encrypt</button>
+<label for="to">Result</label><textarea id="to" class="mono" readonly></textarea>
+<div class="row" style="margin-top:10px"><button class="sec" data-copy="#to">Copy result</button><button class="sec" id="swap">To input</button></div>
+<p id="msg1" role="status" style="font-weight:600;margin:10px 0 0"></p>
+</section>
+
+<section id="p-h" hidden>
+<label for="hi">Input</label><textarea id="hi"></textarea>
+<div id="ho"></div>
+</section>
+
+<section id="p-k" hidden>
+<div id="ch"></div><input id="ci" type="text" inputmode="decimal" autocomplete="off" aria-label="Expression">
+<div class="pad" id="pad"></div>
+</section>
+
+<section id="p-r" hidden>
+<div class="g3"><div><label for="rmin">Min</label><input id="rmin" type="number" value="1"></div><div><label for="rmax">Max</label><input id="rmax" type="number" value="100"></div><div><label for="rcnt">Count</label><input id="rcnt" type="number" value="1" min="1" max="1000"></div></div>
+<div class="chk"><label><input type="checkbox" id="ruq"> Unique</label></div>
+<button class="btn" id="rgo" style="margin-top:6px">Generate</button>
+<div class="row" style="margin-top:10px"><button class="sec" id="lotto">Lotto</button><button class="sec" id="dice">Dice</button><button class="sec" id="coin">Coin</button></div>
+<div class="out" id="rres" aria-live="polite"></div>
+<label for="li" style="margin-top:22px">List (one per line)</label><textarea id="li"></textarea>
+<div class="row" style="margin-top:8px"><input id="lcnt" type="number" value="1" min="1" aria-label="Count"><button class="sec" id="pick">Pick</button><button class="sec" id="shuf">Shuffle</button></div>
+<div class="out" id="lres" aria-live="polite"></div>
+</section>
+
+<section id="p-s" hidden>
+<div class="g3"><div><label for="len">Length</label><input id="len" type="number" value="16" min="1" max="128"></div><div><label for="scnt">Count</label><input id="scnt" type="number" value="1" min="1" max="20"></div></div>
+<div class="chk"><label><input type="checkbox" id="sup" checked> Upper</label><label><input type="checkbox" id="slo" checked> Lower</label><label><input type="checkbox" id="sdg" checked> Digits</label><label><input type="checkbox" id="ssy"> Symbols</label><label><input type="checkbox" id="sex"> No lookalikes</label></div>
+<div class="row"><button class="btn" id="sgo" style="margin-top:6px">Generate</button><button class="sec fit" id="uuid" style="margin-top:6px;padding:13px">UUID</button></div>
+<div class="out" id="sres" aria-live="polite"></div>
+<div class="row" style="margin-top:10px"><span></span><button class="sec fit" data-copy="#sres">Copy</button></div>
+</section>
+<hr>
+<textarea id="note" rows="8" readonly aria-label="Note"></textarea>
+<div class="row" id="lk"><input id="np" type="password" autocomplete="off" aria-label="Password"><button id="nu" class="fit">Unlock</button></div>
+<div class="row" id="ed" hidden><button id="ns">Save</button><button id="nl">Lock</button></div>
+<div id="nm" role="status"></div>
+</main>
+<div id="f">HASU</div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const E=new TextEncoder(),FD=new TextDecoder('utf-8',{fatal:true});
+const b64=u=>{let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
+const unb64=s=>Uint8Array.from(atob(s.replace(/\s+/g,'')),c=>c.charCodeAt(0));
+const rnd=n=>crypto.getRandomValues(new Uint8Array(n));
+function ri(n){const l=Math.floor(4294967296/n)*n;let x;do{x=crypto.getRandomValues(new Uint32Array(1))[0]}while(x>=l);return x%n}
+function show(id,t,err){const e=$(id);e.textContent=t;e.classList.toggle('err',!!err)}
+function say(t,err){const e=$('#msg1');e.textContent=t;e.className=err?'err':'ok'}
+
+async function dk(p,salt,alg){const b=await crypto.subtle.importKey('raw',E.encode(p),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},b,{name:alg,length:256},false,['encrypt','decrypt'])}
+const aes=alg=>{const L=alg=='AES-GCM'?12:16,P=v=>alg=='AES-CTR'?{name:alg,counter:v,length:64}:{name:alg,iv:v};
+return async(t,k,d)=>{if(d){const a=unb64(t),key=await dk(k,a.slice(0,16),alg);return FD.decode(await crypto.subtle.decrypt(P(a.slice(16,16+L)),key,a.slice(16+L)))}
+const s=rnd(16),v=rnd(L),key=await dk(k,s,alg),c=new Uint8Array(await crypto.subtle.encrypt(P(v),key,E.encode(t))),o=new Uint8Array(16+L+c.length);o.set(s);o.set(v,16);o.set(c,16+L);return b64(o)}};
+const xr=(u,k)=>{const kb=E.encode(k);return u.map((b,i)=>b^kb[i%kb.length])};
+const sh=(c,n)=>{const x=c.charCodeAt(0);
+if(x>=65&&x<=90)return String.fromCharCode((x-65+n%26+26)%26+65);
+if(x>=97&&x<=122)return String.fromCharCode((x-97+n%26+26)%26+97);
+if(x>=44032&&x<=55203)return String.fromCharCode((x-44032+n%11172+11172)%11172+44032);return c};
+const hx=b=>b.toString(16).padStart(2,'0');
+const M={
+gcm:{n:'AES-256-GCM',k:'Password',f:aes('AES-GCM')},
+cbc:{n:'AES-256-CBC',k:'Password',f:aes('AES-CBC')},
+ctr:{n:'AES-256-CTR',k:'Password',f:aes('AES-CTR')},
+xor:{n:'XOR + Base64',k:'Key',f:async(t,k,d)=>d?FD.decode(xr(unb64(t),k)):b64(xr(E.encode(t),k))},
+caesar:{n:'Caesar',k:'Shift (number)',f:async(t,k,d)=>{const n=parseInt(k);if(isNaN(n))throw 1;return[...t].map(c=>sh(c,d?-n:n)).join('')}},
+vig:{n:'Vigenere',k:'Keyword',f:async(t,k,d)=>{const ks=[...k.toLowerCase()].filter(c=>/[a-z]/.test(c)).map(c=>c.charCodeAt(0)-97);if(!ks.length)throw 1;let i=0;return t.replace(/[a-z]/gi,c=>{const n=ks[i++%ks.length];return sh(c,d?-n:n)})}},
+atbash:{n:'Atbash',k:'',f:async t=>[...t].map(c=>{const x=c.charCodeAt(0);return x>=65&&x<=90?String.fromCharCode(155-x):x>=97&&x<=122?String.fromCharCode(219-x):x>=44032&&x<=55203?String.fromCharCode(99235-x):c}).join('')},
+rot13:{n:'ROT13',k:'',f:async t=>t.replace(/[a-z]/gi,c=>sh(c,13))},
+b64:{n:'Base64',k:'',f:async(t,k,d)=>d?FD.decode(unb64(t)):b64(E.encode(t))},
+hex:{n:'Hex',k:'',f:async(t,k,d)=>{if(!d)return[...E.encode(t)].map(hx).join(' ');const h=t.replace(/[^0-9a-f]/gi,'').match(/../g);if(!h)throw 1;return FD.decode(Uint8Array.from(h,x=>parseInt(x,16)))}},
+bin:{n:'Binary',k:'',f:async(t,k,d)=>{if(!d)return[...E.encode(t)].map(b=>b.toString(2).padStart(8,'0')).join(' ');const h=t.replace(/[^01]/g,'').match(/.{8}/g);if(!h)throw 1;return FD.decode(Uint8Array.from(h,x=>parseInt(x,2)))}},
+url:{n:'URL',k:'',f:async(t,k,d)=>d?decodeURIComponent(t):encodeURIComponent(t)}};
+const G=[['AES-256',['gcm','cbc','ctr']],['Classic',['xor','caesar','vig','atbash','rot13']],['Encoding',['b64','hex','bin','url']]];
+$('#m').innerHTML=G.map(([l,a])=>`<optgroup label="${l}">${a.map(i=>`<option value="${i}">${M[i].n}</option>`).join('')}</optgroup>`).join('');
+let mode='enc';
+function setMode(m){mode=m;$('#be').setAttribute('aria-pressed',m=='enc');$('#bd').setAttribute('aria-pressed',m=='dec');$('#go').textContent=m=='enc'?'Encrypt':'Decrypt';$('#til').textContent=m=='enc'?'Input':'Input';$('#to').value='';say('')}
+function setM(){const m=M[$('#m').value];$('#kw').hidden=!m.k;$('#kl').textContent=m.k;$('#key').type=/number/.test(m.k)?'text':'password';$('#eye').textContent='Show'}
+async function run(){const m=M[$('#m').value],t=$('#ti').value,k=$('#key').value;
+if(!t.trim())return say('Input is empty',1);
+if(m.k&&!k)return say('Key is empty',1);
+$('#go').disabled=true;
+try{$('#to').value=await m.f(t,k,mode=='dec');say('')}
+catch(e){$('#to').value='';say(mode=='dec'?'Decrypt failed':'Error',1)}
+$('#go').disabled=false}
+$('#be').onclick=()=>setMode('enc');$('#bd').onclick=()=>setMode('dec');
+$('#m').onchange=setM;$('#go').onclick=run;
+$('#swap').onclick=()=>{const o=$('#to').value;if(!o)return say('No result',1);const n=mode=='enc'?'dec':'enc';setMode(n);$('#ti').value=o;say('')};
+$('#eye').onclick=()=>{const k=$('#key'),s=k.type=='password';k.type=s?'text':'password';$('#eye').textContent=s?'Hide':'Show'};
+setM();
+
+async function hs(){const u=E.encode($('#hi').value);let h='';for(const a of['SHA-1','SHA-256','SHA-384','SHA-512']){const d=new Uint8Array(await crypto.subtle.digest(a,u));h+=`<div class="hr"><b>${a}</b><code>${[...d].map(hx).join('')}</code><button>Copy</button></div>`}$('#ho').innerHTML=h}
+$('#hi').oninput=hs;hs();
+
+function calc(s){s=s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\s+/g,'');let i=0;
+const p=()=>{let v=t();while(s[i]=='+'||s[i]=='-'){const o=s[i++],r=t();v=o=='+'?v+r:v-r}return v};
+const t=()=>{let v=w();while(s[i]=='*'||s[i]=='/'){const o=s[i++],r=w();v=o=='*'?v*r:v/r}return v};
+const w=()=>{const b=u();if(s[i]=='^'){i++;return b**w()}return b};
+const u=()=>{if(s[i]=='-'){i++;return -u()}if(s[i]=='+'){i++;return u()}return f()};
+const f=()=>{let v;if(s[i]=='('){i++;v=p();if(s[i]!=')')throw 1;i++}
+else if(s.startsWith('sqrt(',i)){i+=5;v=Math.sqrt(p());if(s[i]!=')')throw 1;i++}
+else{const m=/^\d*\.?\d+/.exec(s.slice(i));if(!m)throw 1;i+=m[0].length;v=+m[0]}
+while(s[i]=='%'){i++;v/=100}return v};
+const v=p();if(i<s.length)throw 1;return v}
+let ans='';
+function ev(){const e=$('#ci').value;if(!e.trim())return;try{const v=calc(e);if(!isFinite(v))throw 1;ans=String(+v.toPrecision(12));$('#ch').textContent=e+' =';$('#ci').value=ans}catch(_){$('#ch').textContent='Invalid expression'}}
+function key(k){const i=$('#ci');if(k=='C'){i.value='';$('#ch').textContent=''}else if(k=='⌫')i.value=i.value.slice(0,-1);else if(k=='=')ev();else i.value+=k=='√'?'sqrt(':k=='−'?'-':k=='ANS'?ans:k}
+$('#pad').innerHTML=['C','⌫','√','^','(',')','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','ANS','='].map(k=>`<button${'÷×−+='.includes(k)?' class="op"':''}>${k}</button>`).join('');
+$('#pad').onclick=e=>{if(e.target.tagName=='BUTTON')key(e.target.textContent)};
+$('#ci').onkeydown=e=>{if(e.key=='Enter'){e.preventDefault();ev()}};
+
+function ints(a,b,n,u){const w=b-a+1;if(u){if(n>w)throw 1;const s=new Set();while(s.size<n)s.add(a+ri(w));return[...s]}return Array.from({length:n},()=>a+ri(w))}
+function rng(){const a=Math.ceil(+$('#rmin').value),b=Math.floor(+$('#rmax').value),n=Math.max(1,Math.min(1000,+$('#rcnt').value||1));
+try{if(!(b>=a)||b-a>=4294967296)throw 1;show('#rres',ints(a,b,n,$('#ruq').checked).join(', '))}catch(_){show('#rres','Invalid range or count',1)}}
+$('#rgo').onclick=rng;
+$('#lotto').onclick=()=>show('#rres','Lotto: '+ints(1,45,6,true).sort((a,b)=>a-b).join(', '));
+$('#dice').onclick=()=>show('#rres','Dice: '+ints(1,6,1)[0]);
+$('#coin').onclick=()=>show('#rres',ri(2)?'Heads':'Tails');
+function lst(all){const a=$('#li').value.split('\n').map(s=>s.trim()).filter(Boolean);if(!a.length)return show('#lres','List is empty',1);
+for(let i=a.length-1;i>0;i--){const j=ri(i+1);[a[i],a[j]]=[a[j],a[i]]}
+const n=all?a.length:Math.max(1,Math.min(a.length,+$('#lcnt').value||1));show('#lres',a.slice(0,n).map((x,i)=>(i+1)+'. '+x).join('\n'))}
+$('#pick').onclick=()=>lst(0);$('#shuf').onclick=()=>lst(1);
+
+function gs(){const S={up:'ABCDEFGHIJKLMNOPQRSTUVWXYZ',lo:'abcdefghijklmnopqrstuvwxyz',dg:'0123456789',sy:'!@#$%^&*()-_=+[]{};:,.?'},x=$('#sex').checked,L=Math.max(1,Math.min(128,+$('#len').value||16)),N=Math.max(1,Math.min(20,+$('#scnt').value||1));
+const sel=Object.keys(S).filter(k=>$('#s'+k).checked).map(k=>x?S[k].replace(/[0O1lI]/g,''):S[k]);
+if(!sel.length)return show('#sres','Select a character type',1);
+const pool=sel.join(''),out=[];
+for(let n=0;n<N;n++){let s;for(let t=0;t<200;t++){s=Array.from({length:L},()=>pool[ri(pool.length)]).join('');if(L<sel.length||sel.every(c=>[...c].some(ch=>s.includes(ch))))break}out.push(s)}
+show('#sres',out.join('\n'))}
+$('#sgo').onclick=gs;
+$('#uuid').onclick=()=>{const n=Math.max(1,Math.min(20,+$('#scnt').value||1));show('#sres',Array.from({length:n},()=>crypto.randomUUID()).join('\n'))};
+
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
+if(b.dataset.copy||b.textContent=='Copy'&&b.closest('.hr')){const s=b.dataset.copy?$(b.dataset.copy):b.previousElementSibling,v=s.value??s.textContent;if(!v)return;
+try{await navigator.clipboard.writeText(v)}catch(_){const r=document.createRange();r.selectNodeContents(s);getSelection().removeAllRanges();getSelection().addRange(r);document.execCommand('copy')}
+const o=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=o,1200)}});
+$$('nav button').forEach(b=>b.onclick=()=>{$$('nav button').forEach(x=>x.setAttribute('aria-pressed',x==b));$$('section').forEach(s=>s.hidden=s.id!='p-'+b.dataset.t)});
+const PH="db47c78f9cbb8a662ca341d5238a64cb351147dd9c03a1559682ad1ce600f708";
+const sha=async t=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',E.encode(t)))].map(hx).join('');
+const nsay=(t,e)=>{const m=$('#nm');m.textContent=t;m.className=e?'err':'ok'};
+try{$('#note').value=localStorage.getItem('hasu-note')||''}catch(_){}
+function lock(){$('#note').readOnly=true;$('#lk').hidden=false;$('#ed').hidden=true;$('#np').value=''}
+$('#nu').onclick=async()=>{if(await sha($('#np').value)==PH){$('#note').readOnly=false;$('#lk').hidden=true;$('#ed').hidden=false;nsay('')}else nsay('Wrong password',1)};
+$('#np').onkeydown=e=>{if(e.key=='Enter')$('#nu').click()};
+$('#nl').onclick=()=>{lock();nsay('')};
+$('#ns').onclick=()=>{try{localStorage.setItem('hasu-note',$('#note').value);lock();nsay('Saved')}catch(_){nsay('Save failed',1)}};
+</script></body></html>
